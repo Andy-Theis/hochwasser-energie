@@ -42,13 +42,21 @@ Software- und Firmware-Optimierung. Keine Hardware-Änderungen.
 
 ## 📁 Projektstruktur
 hochwasser-energie/
+
 ├── baseline.py        ← PPK2 Messung (5 Min)
+
 ├── auswerten.py       ← Grafiken & Auswertung
+
 ├── erster_test.py     ← Verbindungstest PPK2
+
 ├── test_verbindung.py ← PPK2 erkennen
+
 └── ergebnisse/
+
 ├── messung.csv    ← alle Messwerte
+
 └── grafiken/      ← Auswertungsgrafiken
+
 ---
 
 ## 🚀 Schnellstart
