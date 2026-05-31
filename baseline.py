@@ -2,7 +2,7 @@ from ppk2_api.ppk2_api import PPK2_API
 import time, numpy as np, csv, datetime
 
 DAUER    = 300   # 5 Minuten
-LABEL    = "v1_baseline_espressif_s3"
+LABEL    = "v4_patch2_light_sleep_wroom32"
 SPANNUNG = 3300
 
 geraete = PPK2_API.list_devices()
