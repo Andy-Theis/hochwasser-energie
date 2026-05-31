@@ -1,63 +1,91 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import numpy as np
 
 # ── CSV laden ───────────────────────────────────────────
 df = pd.read_csv("ergebnisse/messung.csv", names=[
-    "Zeit", "Label", "Avg_uA", "Peak_uA",
-    "Min_uA", "Ladung_mAs", "Samples", "Dauer_s"
+    "Zeit", "Label", "Avg_mA", "Peak_mA",
+    "Min_uA", "Samples", "Dauer_s"
 ])
-df["Avg_mA"] = df["Avg_uA"].astype(float) / 1000
+df["Avg_mA"] = df["Avg_mA"].astype(float)
+df["Peak_mA"] = df["Peak_mA"].astype(float)
 
-# ── Balkendiagramm: Durchschnittsstrom je Patch ─────────
-fig, ax = plt.subplots(figsize=(10, 5))
-farben = ["#E74C3C", "#F39C12", "#F1C40F",
-          "#2ECC71", "#1ABC9C", "#065A82"]
-balken = ax.bar(df["Label"], df["Avg_mA"],
-                color=farben[:len(df)], edgecolor="white")
+print("Geladene Messungen:")
+print(df[["Label", "Avg_mA", "Peak_mA"]].to_string())
 
-# Zielwert einzeichnen
+# ── Farben je Version ───────────────────────────────────
+farben = {
+    "v1_baseline_wroom32":              "#E74C3C",
+    "v1_baseline_delivery_mini32":      "#E67E22",
+    "v1_baseline_s3_wroom1":            "#F39C12",
+    "v2_firmware_kein_sleep_mini32":    "#E74C3C",
+    "v3_patch1_deep_sleep_mini32":      "#27AE60",
+    "v4_patch2_light_sleep_mini32":     "#1ABC9C",
+}
+standard_farbe = "#065A82"
+
+# ── Plot 1: Balkendiagramm Durchschnittsstrom ───────────
+fig, ax = plt.subplots(figsize=(12, 6))
+
+balken_farben = [farben.get(l, standard_farbe) for l in df["Label"]]
+balken = ax.bar(range(len(df)), df["Avg_mA"],
+                color=balken_farben, edgecolor="white", width=0.6)
+
+# Zielwert
 ax.axhline(y=12.6, color="#02C39A", linestyle="--",
-           linewidth=2, label="Ziel: 12,6 mA")
+           linewidth=2, label="Projektziel: 12,6 mA")
 
-ax.set_xlabel("Firmware-Version / Patch", fontsize=12)
+# Werte über Balken
+for i, (b, wert) in enumerate(zip(balken, df["Avg_mA"])):
+    ax.text(b.get_x() + b.get_width()/2,
+            b.get_height() + 0.5,
+            f"{wert:.2f} mA",
+            ha="center", fontsize=9, fontweight="bold")
+
+ax.set_xticks(range(len(df)))
+ax.set_xticklabels(df["Label"], rotation=25, ha="right", fontsize=9)
 ax.set_ylabel("Ø Stromverbrauch (mA)", fontsize=12)
-ax.set_title("Energieverbrauch: Vorher / Nachher je Patch",
-             fontsize=14, fontweight="bold")
-ax.legend()
-
-# Werte über Balken anzeigen
-for balken_elem, wert in zip(balken, df["Avg_mA"]):
-    ax.text(balken_elem.get_x() + balken_elem.get_width()/2,
-            balken_elem.get_height() + 0.3,
-            f"{wert:.1f} mA", ha="center", fontsize=10)
+ax.set_title("Hochwasserpegel – Energieverbrauch je Firmware-Version",
+             fontsize=14, fontweight="bold", pad=15)
+ax.legend(fontsize=10)
+ax.set_ylim(0, df["Avg_mA"].max() * 1.2)
+ax.grid(axis="y", alpha=0.3)
 
 plt.tight_layout()
-plt.savefig("ergebnisse/grafiken/vergleich.png", dpi=150)
+plt.savefig("ergebnisse/grafiken/vergleich_strom.png", dpi=150)
+print("✅ Grafik 1 gespeichert")
 plt.show()
 
-# ── Zeitreihengrafik: Stromprofil eines Zyklus ──────────
-def plot_stromprofil(label):
-    try:
-        raw = np.load(f"ergebnisse/{label}_raw.npy")
-    except FileNotFoundError:
-        print(f"Keine Rohdaten für {label}")
-        return
+# ── Plot 2: Ersparnis in Prozent ────────────────────────
+baseline_idx = df[df["Label"].str.contains("kein_sleep")].index
+if len(baseline_idx) > 0:
+    baseline_mA = df.loc[baseline_idx[0], "Avg_mA"]
+    df["Ersparnis_pct"] = ((baseline_mA - df["Avg_mA"]) / baseline_mA * 100)
 
-    # PPK2 sampelt mit 100kHz → Zeit in ms
-    zeit_ms = np.arange(len(raw)) / 100  # samples / 100kS/s → ms
-    strom_mA = raw / 1000  # µA → mA
+    fig2, ax2 = plt.subplots(figsize=(12, 6))
+    farben2 = [farben.get(l, standard_farbe) for l in df["Label"]]
+    balken2 = ax2.bar(range(len(df)), df["Ersparnis_pct"],
+                      color=farben2, edgecolor="white", width=0.6)
 
-    fig, ax = plt.subplots(figsize=(14, 4))
-    ax.plot(zeit_ms, strom_mA, linewidth=0.3, color="#065A82")
-    ax.set_xlabel("Zeit (ms)")
-    ax.set_ylabel("Strom (mA)")
-    ax.set_title(f"Stromprofil: {label}")
-    ax.set_yscale("log")  # Log-Skala zeigt Sleep+Peak zusammen
+    ax2.axhline(y=73, color="#02C39A", linestyle="--",
+                linewidth=2, label="Projektziel: –73%")
+
+    for b, wert in zip(balken2, df["Ersparnis_pct"]):
+        ax2.text(b.get_x() + b.get_width()/2,
+                 b.get_height() + 0.5,
+                 f"{wert:.1f}%",
+                 ha="center", fontsize=9, fontweight="bold")
+
+    ax2.set_xticks(range(len(df)))
+    ax2.set_xticklabels(df["Label"], rotation=25, ha="right", fontsize=9)
+    ax2.set_ylabel("Ersparnis gegenüber Baseline (%)", fontsize=12)
+    ax2.set_title("Hochwasserpegel – Energieersparnis je Patch",
+                  fontsize=14, fontweight="bold", pad=15)
+    ax2.legend(fontsize=10)
+    ax2.grid(axis="y", alpha=0.3)
+
     plt.tight_layout()
-    plt.savefig(f"ergebnisse/grafiken/profil_{label}.png", dpi=150)
+    plt.savefig("ergebnisse/grafiken/vergleich_ersparnis.png", dpi=150)
+    print("✅ Grafik 2 gespeichert")
     plt.show()
-
-# Profil für jede Version anzeigen
-for label in df["Label"]:
-    plot_stromprofil(label)
