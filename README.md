@@ -2,7 +2,7 @@
 
 **Ressourceneffiziente IoT-Sensorik mit LLM-gestütztem Green Coding**  
 Umwelt-Campus Birkenfeld · SoSe 2026  
-Betreuer: Prof. Dr. Naumann · Prof. Dr. Gollmer · ISS
+Betreuer: Prof. Dr. Naumann · Prof. Dr. Gollmer
 
 ---
 
