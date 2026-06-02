@@ -50,8 +50,7 @@ def messe_zyklus(label, dauer_s, spannung_mv):
 
     ppk2.stop_measuring()
     ppk2.toggle_DUT_power("OFF")
-    ppk2.close_connection()
-
+    
     # ── Auswertung ──────────────────────────────────────
     if not alle_samples:
         print("❌ Keine Samples erhalten!")
