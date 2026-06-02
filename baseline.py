@@ -1,8 +1,8 @@
 from ppk2_api.ppk2_api import PPK2_API
 import time, numpy as np, csv, datetime
 
-DAUER    = 300   # 5 Minuten
-LABEL    = "v4_patch2_light_sleep_wroom32"
+DAUER    = 1800   # von 5 Minuten auf 30 minuten erhöht
+LABEL    = "v4_patch2_light_sleep_30min"   # ← vor jedem Patch ändern!
 SPANNUNG = 3300
 
 geraete = PPK2_API.list_devices()

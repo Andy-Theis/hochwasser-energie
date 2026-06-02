@@ -5,7 +5,7 @@ import numpy as np
 # ─── Konfiguration ────────────────────────────────────────
 SPANNUNG_MV   = 3300    # 3,3V für ESP32
 ZYKLUS_DAUER  = 900     # 15 Minuten = 1 vollständiger Zyklus
-LABEL         = "v1_baseline"   # ← vor jedem Patch ändern!
+LABEL         = "messen.py_kein_sleep_wroom32"   # ← vor jedem Patch ändern!
 CSV_DATEI     = "ergebnisse/messung.csv"
 # ──────────────────────────────────────────────────────────
 

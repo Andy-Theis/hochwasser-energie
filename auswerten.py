@@ -19,9 +19,12 @@ farben = {
     "v1_baseline_wroom32":              "#E74C3C",
     "v1_baseline_delivery_mini32":      "#E67E22",
     "v1_baseline_s3_wroom1":            "#F39C12",
-    "v2_firmware_kein_sleep_mini32":    "#E74C3C",
-    "v3_patch1_deep_sleep_mini32":      "#27AE60",
-    "v4_patch2_light_sleep_mini32":     "#1ABC9C",
+    "v2_firmware_kein_sleep_30min":    "#E74C3C",
+    "v3_patch1_deep_sleep_30min":      "#27AE60",
+    "v4_patch2_light_sleep_30min":     "#1ABC9C",
+    "v5_patch3_cpu_80mhz_wroom32": "#2980B9",
+    "v6_patch4_wifi_bt_aus_wroom32": "#8E44AD",
+    "v7_patch5_sensor_timing_wroom32": "#2C3E50",
 }
 standard_farbe = "#065A82"
 
@@ -53,7 +56,7 @@ ax.set_ylim(0, df["Avg_mA"].max() * 1.2)
 ax.grid(axis="y", alpha=0.3)
 
 plt.tight_layout()
-plt.savefig("ergebnisse/grafiken/vergleich_strom.png", dpi=150)
+plt.savefig("ergebnisse/grafiken/vergleich_strom_30min.png", dpi=150)
 print("✅ Grafik 1 gespeichert")
 plt.show()
 
@@ -86,6 +89,6 @@ if len(baseline_idx) > 0:
     ax2.grid(axis="y", alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig("ergebnisse/grafiken/vergleich_ersparnis.png", dpi=150)
+    plt.savefig("ergebnisse/grafiken/vergleich_ersparnis_30min.png", dpi=150)
     print("✅ Grafik 2 gespeichert")
     plt.show()
