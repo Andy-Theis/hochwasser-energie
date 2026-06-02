@@ -81,7 +81,7 @@ def messe_zyklus(label, dauer_s, spannung_mv):
     print(f"   ✅ Gespeichert in {CSV_DATEI}")
 
     # Rohdaten für spätere Grafik speichern
-    np.save(f"ergebnisse/{label}_raw.npy", np.array(alle_samples))
+    #np.save(f"ergebnisse/{label}_raw.npy", np.array(alle_samples))
     return avg_uA
 
 if __name__ == "__main__":
